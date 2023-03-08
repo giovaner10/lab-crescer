@@ -1,15 +1,23 @@
-version: "3"
+version: "3.1"
+
 services:
-  database:
+  PostgreSQL:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=Postgres123
-    image: postgres
-    networks:
-      lan:
-        ipv4_address: 172.45.45.10
+      - POSTGRES_PASSWORD=8718
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=seguranca
+    volumes:
+      - postgresdb_volume:/var/lib/postgresql/data
+      - ./script.sql:/docker-entrypoint-initdb.d/script.sql
 
 networks:
   lan:
     ipam:
       config:
         - subnet: 172.45.45.0/24
+
+volumes:
+  postgresdb_volume:

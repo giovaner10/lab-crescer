@@ -2,8 +2,10 @@ package br.com.cwi.shop.controllers;
 
 import br.com.cwi.shop.dtos.UsuarioDto;
 import br.com.cwi.shop.dtos.UsuarioExibicaoDto;
+import br.com.cwi.shop.entities.Usuario;
 import br.com.cwi.shop.helpers.StringHelper;
 import br.com.cwi.shop.repository.PostRepository;
+import br.com.cwi.shop.repository.UsuarioRepositoryJpa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ public class UsuarioController extends BaseController {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private UsuarioRepositoryJpa usuarioRepositoryJpa;
 
     @GetMapping("usuario/{id}")
     public ResponseEntity obterDadosUsuario(@PathVariable long id) {
@@ -69,20 +74,7 @@ public class UsuarioController extends BaseController {
     @GetMapping("usuarios")
     public ResponseEntity obterUsuarios(@RequestParam String filtro) {
 
-        try {
-
-            List<UsuarioExibicaoDto> list = new ArrayList<>();
-
-            for (var item : usuarioRepository.buscar(filtro)) {
-                var dto = new UsuarioExibicaoDto(item);
-                var quantidatePostsUsuario = postRepository.quantidadePostPorUsuario(item.getId());
-                dto.setQuantidadePosts(quantidatePostsUsuario);
-                list.add(dto);
-            }
-
-            return new ResponseEntity(list, HttpStatus.OK);
-        } catch(Exception ex) {
-            return internalServerError(ex);
-        }
+        List<Usuario> list = usuarioRepositoryJpa.findAllUsersByName(filtro.toLowerCase());
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 }
